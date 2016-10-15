@@ -1,0 +1,14 @@
+{"AFC": {
+  "EAST":["NE","BUF","MIA","NYJ"],
+  "NORTH":["PIT","CIN","BAL","CLE"],
+  "SOUTH":["IND","HOU","JAX","TEN"],
+  "WEST":["DEN","KC","SD","OAK"]
+ },
+ "NFC": {
+  "EAST":["DAL","PHI","NYG","WAS"],
+  "NORTH":["GB","DET","MIN","CHI"],
+  "SOUTH":["CAR","NO","ATL","TB"],
+  "WEST":["SEA","AZ","SF","STL"]
+ }
+}
+

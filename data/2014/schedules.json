@@ -1,0 +1,17 @@
+{"AFC": {"EAST":"SOUTH",
+         "NORTH":"WEST",
+         "SOUTH":"EAST",
+         "WEST":"NORTH"},
+ "NFC": {"EAST":"SOUTH",
+         "NORTH":"WEST",
+         "SOUTH":"EAST",
+         "WEST":"NORTH"},
+ "AFC_NFC": {"EAST":"EAST",
+             "NORTH":"WEST",
+             "SOUTH":"SOUTH",
+             "WEST":"NORTH"},
+ "NFC_AFC": {"EAST":"EAST",
+             "NORTH":"WEST",
+             "SOUTH":"SOUTH",
+             "WEST":"NORTH"}
+}
