@@ -1,3 +1,7 @@
+from functools import total_ordering
+
+
+@total_ordering
 class ELO:
 
     @staticmethod
@@ -15,7 +19,13 @@ class ELO:
             return True
         if self.wins > other.wins:
             return False
-        return self.elo > other.elo
+        return self.elo < other.elo
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __repr__(self):
+        return "ELO(name='{s.name}', starting_elo={s.elo}, wins={s.wins}, losses={s.losses})".format(s=self)
 
     def __str__(self):
         return "{s.name} ({s.wins}-{s.losses}) ELO: {s.elo}".format(s=self)
@@ -27,4 +37,3 @@ class ELO:
     def UpdateLoss(self, points: float):
         self.elo -= ELO.abs(points)
         self.losses += 1
-

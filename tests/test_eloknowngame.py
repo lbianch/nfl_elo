@@ -9,6 +9,17 @@ logging.basicConfig(level=logging.INFO)
 
 class TestELOKnownGame(unittest.TestCase):
 
+    def test_raises(self):
+        game = ELOKnownGame(ELO('ATL', 1541, 6, 1), ELO('TB', 1351, 2, 4), 20, 23)
+        game.winner = 'HOU'
+        with self.assertRaises(AttributeError):
+            game.loser  # Statement does have effect since this is a property it is a function call
+        game.winner = ELO('HOU', 1450, 3, 5)
+        with self.assertRaises(KeyError):
+            game.loser
+        with self.assertRaises(ValueError):
+            game.UpdateTeams()
+
     def test_Week08_TBatATL(self):
         logging.info("Testing TB @ ATL Week 8 2015")
         logging.info("Favored: Home; Winner: Home")
@@ -24,7 +35,9 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_min': 0.187,
                 'away_win_max': 0.188,
                 'elo_points': 25}
-        self.run_game(data)
+        game = self.run_game(data)
+        self.assertLess(game.winner, game.loser,
+                        "Expected {g.winner} to be less than {g.loser}".format(g=game))
         logging.info("Test Passed")
 
     def test_Week11_GBatMIN(self):
@@ -43,7 +56,9 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_min': 0.44,
                 'away_win_max': 0.46,
                 'elo_points': 31}
-        self.run_game(data)
+        game = self.run_game(data)
+        self.assertLess(game.loser, game.winner,
+                        "Expected {g.loser} to be less than {g.winner}".format(g=game))
         logging.info("Test Passed")
 
     def test_Week14_SEAatBAL(self):
@@ -62,7 +77,9 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_min': 0.666,
                 'away_win_max': 0.667,
                 'elo_points': 21}
-        self.run_game(data)
+        game = self.run_game(data)
+        self.assertLess(game.loser, game.winner,
+                        "Expected {g.loser} to be less than {g.winner}".format(g=game))
         logging.info("Test Passed")
 
     def test_Week17_NEatMIA(self):
@@ -81,7 +98,9 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_min': 0.819,
                 'away_win_max': 0.820,
                 'elo_points': 46}
-        self.run_game(data)
+        game = self.run_game(data)
+        self.assertLess(game.winner, game.loser,
+                        "Expected {g.winner} to be less than {g.loser}".format(g=game))
         logging.info("Test Passed")
 
     def run_game(self, data):
@@ -125,6 +144,7 @@ class TestELOKnownGame(unittest.TestCase):
                          "Expected loser to have {} wins but found {}".format(data['loser'].wins, g.loser.wins))
         self.assertEqual(g.loser.losses, data['loser'].losses,
                          "Expected loser to have {} losses but found {}".format(data['loser'].losses, g.loser.losses))
+        return g
 
 
 if __name__ == '__main__':

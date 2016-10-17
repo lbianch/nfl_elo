@@ -65,14 +65,14 @@ class ELOGameSimulator:
     def UpdateTeams(self):
         if self.winner is None:
             self.Simulate()
-        elo_points = ELOGameSimulator.K * math.log(abs(self.spread) + 1.0)
-        elo_points /= 1.0 + ((self.winner.elo - self.loser.elo) / 2200.0)
         if self.winner == self.home:
             prob = self.HomeWinProbability()
         elif self.winner == self.away:
             prob = self.AwayWinProbability()
         else:
             raise ValueError("Winner is {s.winner} but must be one of {s.home} or {s.away}".format(s=self))
+        elo_points = ELOGameSimulator.K * math.log(abs(self.spread) + 1.0)
+        elo_points /= 1.0 + ((self.winner.elo - self.loser.elo) / 2200.0)
         elo_points *= 1.0 - prob
         logging.debug("Updating with points = %f * %f * (1.0 - %f) / (1.0 + %f/2200.) = %f",
                       ELOGameSimulator.K, math.log(abs(self.spread) + 1), prob,
@@ -87,3 +87,9 @@ class ELOKnownGame(ELOGameSimulator):
         self.winner = self.home if home_score > away_score else self.away
         self.spread = abs(home_score - away_score)
 
+def GetGame(*args):
+    if len(args) == 2:
+        return ELOGameSimulator(*args)
+    if len(args) == 4:
+        return ELOKnownGame(*args)
+    raise ValueError("Requires either two or four arguments")
