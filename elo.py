@@ -15,6 +15,9 @@ class ELO:
         self.losses = losses
 
     def __lt__(self, other) -> bool:
+        """Enable sorting by default from teams with most wins to fewest wins.
+        If teams have the same number of wins, sorting would occur by ELO rank.
+        """
         if self.wins < other.wins:
             return True
         if self.wins > other.wins:

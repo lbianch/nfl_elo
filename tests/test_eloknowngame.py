@@ -114,14 +114,14 @@ class TestELOKnownGame(unittest.TestCase):
         self.assertEqual(g.HomeWinProbability() + g.AwayWinProbability(), 1.0,
                          "Expected probabilities sum to 1.0, found {} and {}".format(g.HomeWinProbability(),
                                                                                      g.AwayWinProbability()))
-        self.assertTrue(data['home_win_min'] < g.HomeWinProbability() < data['home_win_max'],
-                        "Expected p in [{},{}], found {}".format(data['home_win_min'],
-                                                                 data['home_win_max'],
-                                                                 g.HomeWinProbability()))
-        self.assertTrue(data['away_win_min'] < g.AwayWinProbability() < data['away_win_max'],
-                        "Expected p in [{},{}], found {}".format(data['away_win_min'],
-                                                                 data['away_win_max'],
-                                                                 g.AwayWinProbability()))
+        self.assertLess(data['home_win_min'], g.HomeWinProbability(),
+                        "Expected p >= {}, found {}".format(data['home_win_min'], g.HomeWinProbability()))
+        self.assertLess(g.HomeWinProbability(), data['home_win_max'],
+                        "Expected p < {}, found {}".format(data['home_win_max'], g.HomeWinProbability()))
+        self.assertLess(data['away_win_min'], g.AwayWinProbability(),
+                        "Expected p >= {}, found {}".format(data['away_win_min'], g.AwayWinProbability()))
+        self.assertLess(g.AwayWinProbability(), data['away_win_max'],
+                        "Expected p < {}, found {}".format(data['away_win_max'], g.AwayWinProbability()))
         start_elo = g.home.elo
         g.UpdateTeams()
         elo_points = abs(g.home.elo - start_elo)

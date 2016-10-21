@@ -2,11 +2,11 @@ import math
 import random
 
 
-def sign(x):
+def sign(x: float) ->  float:
     return math.copysign(1.0, x)
 
 
-def inv_erf(x):
+def inv_erf(x: float) -> float:
     # See https://en.wikipedia.org/wiki/Error_function#Approximation_with_elementary_functions
     log = math.log(1.0 - x**2)
     a = 8.0 * (math.pi - 3.0) / (3.0 * math.pi * (4.0 - math.pi))
@@ -16,7 +16,7 @@ def inv_erf(x):
     return sign(x) * math.sqrt(result)
 
 
-def get_sigma(mu, prob):  # Probability of greater than zero
+def get_sigma(mu: float, prob: float) -> float:  # Probability of greater than zero
     den = inv_erf(1.0 - 2.0 * prob)
     den *= math.sqrt(2.0)
     try:
@@ -26,15 +26,16 @@ def get_sigma(mu, prob):  # Probability of greater than zero
         return 11.087
 
 
-def get_spread(mu, prob, sigma=None):
-    sigma = sigma or get_sigma(mu, prob)
+def get_spread(mu: float, prob: float, sigma: float=None) -> float:
+    if sigma is None:
+        sigma = get_sigma(mu, prob)
     result = None
-    while not result:
+    while not result:  # Do not use `while result is None` - want to repeat for `0`
         result = int(round(random.gauss(mu, sigma)))
     return result
 
 
-def stats(pt_spread, n_iterations):
+def stats(pt_spread: float, n_iterations: int):
     prob = 1.0 / (1.0 + 10.0**(-pt_spread / 16.0))
     sigma = get_sigma(pt_spread, prob)
     print('expected probability =', prob)

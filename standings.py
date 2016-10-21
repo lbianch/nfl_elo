@@ -13,7 +13,7 @@ class Standings(dict):
     @staticmethod
     def _FormatDict(data):
         for team, val in data:
-            if isinstance(val, int):
+            if not isinstance(val, list):
                 data[team] = [val]
         return data
 
@@ -53,7 +53,7 @@ class Standings(dict):
         return self.Wins(team) == 16 and self.Losses(team) == 0
 
     def GetUndefeated(self):
-        return [team for team in self if self.IsUndefeated(team)]
+        return list(filter(self.IsUndefeated, self))
 
     def GetNumberUndefeated(self):
         return len(self.GetUndefeated())

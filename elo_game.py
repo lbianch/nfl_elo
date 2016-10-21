@@ -5,16 +5,16 @@ from elo import ELO
 import inv_erf
 
 class ELOGameSimulator:
-    K = 20.0
+    K = 20.0  # Controls scaling for ELO point transfer from game result
 
     def __init__(self, home: ELO, away: ELO):
         self.home = home
         self.away = away
         self.winner = None
-        self.spread = 0
+        self.spread = None
 
     def ELOMargin(self) -> int:
-        # 65 Point advantage for home teams
+        # 65 ELO Point advantage for home teams
         logging.debug("Game %s @ %s", self.away, self.home)
         margin = 65 + self.home.elo - self.away.elo
         logging.debug("ELO Margin = %d", margin)
@@ -55,6 +55,7 @@ class ELOGameSimulator:
         logging.debug("Home win probability = %f", prob)
         self.spread = inv_erf.get_spread(pt_margin, prob)
         self.winner = self.home if self.spread > 0.0 else self.away
+        self.spread = abs(self.spread)
         logging.debug("Spread = %d", self.spread)
         logging.debug("Winner = %s", self.winner.name)
 
@@ -71,9 +72,9 @@ class ELOGameSimulator:
             prob = self.AwayWinProbability()
         else:
             raise ValueError("Winner is {s.winner} but must be one of {s.home} or {s.away}".format(s=self))
-        elo_points = ELOGameSimulator.K * math.log(abs(self.spread) + 1.0)
-        elo_points /= 1.0 + ((self.winner.elo - self.loser.elo) / 2200.0)
-        elo_points *= 1.0 - prob
+        elo_points = ELOGameSimulator.K * (1.0 - prob)
+        elo_points *= math.log(abs(self.spread) + 1.0)
+        elo_points /= 1.0 + (self.winner.elo - self.loser.elo) / 2200.0
         logging.debug("Updating with points = %f * %f * (1.0 - %f) / (1.0 + %f/2200.) = %f",
                       ELOGameSimulator.K, math.log(abs(self.spread) + 1), prob,
                       self.winner.elo - self.loser.elo, elo_points)
@@ -86,6 +87,7 @@ class ELOKnownGame(ELOGameSimulator):
         super().__init__(home, away)
         self.winner = self.home if home_score > away_score else self.away
         self.spread = abs(home_score - away_score)
+
 
 def GetGame(*args):
     if len(args) == 2:
