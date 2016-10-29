@@ -3,12 +3,9 @@ import logging
 import pickle
 
 import inv_erf
+from elo import probability_points as prob
 
 logging.basicConfig(level=logging.INFO)
-
-
-def prob(mu: float) -> float:
-    return 1.0 / (1.0 + 10.0**(-mu / 16.0))
 
 
 class TestInvErf(unittest.TestCase):
@@ -40,7 +37,7 @@ class TestInvErf(unittest.TestCase):
             inv_erf.get_sigma(13.0, 1.2)
         with self.assertRaises(ValueError):
             inv_erf.get_sigma(-3.0, -0.2)
-        for pts in [3, 7, 13, 21, 45]:
+        for pts in [3., 7., 13., 21., 45.]:
             self.assertGreater(prob(pts), 0.5)
             self.assertGreater(inv_erf.get_sigma(pts, prob(pts)), 11.08)
             self.assertLess(prob(-pts), 0.5)

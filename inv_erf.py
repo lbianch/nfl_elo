@@ -1,6 +1,8 @@
 import math
 import random
 
+import elo
+
 
 def sign(x: float) ->  float:
     return math.copysign(1.0, x)
@@ -36,13 +38,12 @@ def get_spread(mu: float, prob: float, sigma: float=None) -> float:
 
 
 def stats(pt_spread: float, n_iterations: int):
-    prob = 1.0 / (1.0 + 10.0**(-pt_spread / 16.0))
+    prob = elo.probability(pt_spread * 25)
     sigma = get_sigma(pt_spread, prob)
     print('expected probability =', prob)
     print('sigma =', sigma)
     x = map(lambda _: get_spread(pt_spread, prob, sigma), range(n_iterations))
-    x = list(x)
-    x.sort()
+    x = sorted(x)
     print('min =', x[0])
     print('max =', x[-1])
     print('avg =', sum(x) / n_iterations)

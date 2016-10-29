@@ -4,7 +4,7 @@ from typing import Dict, List
 from elo import ELO
 
 
-class Standings(dict):
+class Standings(dict):  # Use with `elo_start.json`
     def __init__(self, start_elo: Dict[str, List[int]]):
         super().__init__()
         for team in start_elo:
@@ -12,7 +12,7 @@ class Standings(dict):
 
     @staticmethod
     def _FormatDict(data):
-        for team, val in data:
+        for team, val in data.items():
             if not isinstance(val, list):
                 data[team] = [val]
         return data
@@ -37,23 +37,28 @@ class Standings(dict):
     def FromString(cls, string):
         return cls(Standings._FormatDict(json.loads(string)))
 
-    def PrintStandings(self):
-        for team in sorted(self.values()):
-            wins = str(team.wins).rjust(3)
-            losses = str(team.losses).rjust(3)
-            print('{} {} {}'.format(team.name.ljust(3), wins, losses))
+    def __contains__(self, item: str) -> bool:
+        return dict.__contains__(self, item.strip("*"))
 
-    def Wins(self, team: str):
+    def __getitem__(self, item: str) -> ELO:
+        return dict.__getitem__(self, item.strip("*"))
+
+    def PrintStandings(self):
+        # Note this relies on ELO.__lt__
+        for team in sorted(self.values(), reverse=True):
+            print('{:3} {}'.format(team.name, team.record.Standings()))
+
+    def Wins(self, team: str) -> int:
         return self[team].wins
 
-    def Losses(self, team: str):
+    def Losses(self, team: str) -> int:
         return self[team].losses
 
-    def IsUndefeated(self, team: str):
-        return self.Wins(team) == 16 and self.Losses(team) == 0
+    def Ties(self, team: str) -> int:
+        return self[team].ties
 
-    def GetUndefeated(self):
-        return list(filter(self.IsUndefeated, self))
+    def GetUndefeated(self) -> List[ELO]:
+        return filter(ELO.IsUndefeated, self.values())
 
-    def GetNumberUndefeated(self):
+    def GetNumberUndefeated(self) -> int:
         return len(self.GetUndefeated())

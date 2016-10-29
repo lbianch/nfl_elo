@@ -2,22 +2,45 @@ import unittest
 import logging
 
 from elo import ELO
-from elo_game import ELOKnownGame
+from elo_game import ELOKnownGame, GetGame
 
 logging.basicConfig(level=logging.INFO)
 
 
 class TestELOKnownGame(unittest.TestCase):
 
+    def test_neutral(self):
+        # This test uses GetGame to return two `ELOKnownGame` instances and
+        # two `ELONeutralKnownGame` instances, checking their margins
+        team_a = ELO("NE", 1744)
+        team_b = ELO("DET", 1540)
+
+        logging.info("Assuming NE {1744} vs DET {1540} at a neutral site ending 34-26; delta = 204")
+        self.assertEqual(GetGame(ELO("*NE", team_a.elo), team_b, 34, 26).ELOMargin(), 204,
+                         "Expected ELO Margin 1744 - 1540 = 204")
+        self.assertEqual(GetGame(ELO("*DET", team_b.elo), team_a, 34, 26).ELOMargin(), -204,
+                         "Expected ELO Margin 1540 - 1744 = - 204")
+
+        logging.info("Assuming NE {1744} vs DET {1540} at NE ending 34-26; delta = 269")
+        self.assertEqual(GetGame(team_a, team_b, 34, 26).ELOMargin(), 269,
+                         "Expected ELO Margin 65 + 1744 - 1540 = 269")
+
+        logging.info("Assuming NE {1744} vs DET {1540} at DET ending 34-26; delta = 139")
+        self.assertEqual(GetGame(team_b, team_a, 26, 34).ELOMargin(), -139,
+                         "Expected ELO Margin 65 + 1540 - 1744 = -139")
+
     def test_raises(self):
         game = ELOKnownGame(ELO('ATL', 1541, 6, 1), ELO('TB', 1351, 2, 4), 20, 23)
         game.winner = 'HOU'
         with self.assertRaises(AttributeError):
+            # This should fail upon trying to access `self.winner.name`
             game.loser  # Statement does have effect since this is a property it is a function call
         game.winner = ELO('HOU', 1450, 3, 5)
         with self.assertRaises(KeyError):
+            # This should fail as the temporary dictionary only stores ATL and TB, not HOU
             game.loser
         with self.assertRaises(ValueError):
+            # This has a sanity check to ensure the winner is either home or away
             game.UpdateTeams()
 
     def test_Week08_TBatATL(self):

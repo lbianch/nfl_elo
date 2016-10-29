@@ -1,5 +1,10 @@
+import os
+import copy
+import collections
+
 from season import Season
 from standings import Standings
+from season_simulator import SeasonSimulator
 
 class Simulator:
     def __init__(self, season: Season, standings: Standings, simulations: int):
@@ -8,6 +13,12 @@ class Simulator:
         self.season = season
         self.standings = standings
         self.simulations = simulations
+
+    @classmethod
+    def FromJSONDirectory(cls, directory: str, simulations: int):
+        season = os.path.join(directory, 'schedule.json')
+        standings = os.path.join(directory, 'elo_start.json')
+        return cls(Season.FromJSON(season), Standings.FromJSON(standings), simulations)
 
     @classmethod
     def FromJSON(cls, season_file, elo_file, simulations):
@@ -31,7 +42,6 @@ class Simulator:
         for i in range(self.simulations):
             simulation = SeasonSimulator(self.season, copy.deepcopy(self.standings))
             simulation.SimulateSeason()
-            simulation.VerifySimulation()
             standings = simulation.standings
             self.undefeated += standings.GetUndefeated()
             self.nUndefeated += range(1, standings.GetNumberUndefeated() + 1)

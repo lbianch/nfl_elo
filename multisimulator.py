@@ -5,6 +5,7 @@ class Multisimulator:
         self.standings = standings
         self.simulations = simulations
         self.experiments = experiments
+        self.undefeated = None
 
     @classmethod
     def FromJSON(cls, season_file, standings_file, simulations, experiments):
@@ -41,6 +42,8 @@ class Multisimulator:
         self.undefeated = {team: sorted(undefeated[team]) for team in undefeated}
 
     def _PrintUndefeated(self, percentile, do_range=True):
+        if self.undefeated is None:
+            self.Simulate()
         for team in self.undefeated:
             result = self.undefeated[team]
             GetPercentile = lambda p: str(100.0*result[int(len(result)*p)]/self.simulations)[0:5]
@@ -52,10 +55,6 @@ class Multisimulator:
                 print('{} [{}%]: {}%'.format(team.ljust(3), int(100 * percentile), GetPercentile(percentile)))
 
     def PrintUndefeated(self):
-        try:
-            for percentile in [0.50, 0.68, 0.95]:
-                self._PrintUndefeated(percentile)
-            self._PrintUndefeated(0.50, do_range=False)
-        except AttributeError:
-            self.Simulate()
-            self.PrintUndefeated()
+        for percentile in [0.50, 0.68, 0.95]:
+            self._PrintUndefeated(percentile)
+        self._PrintUndefeated(0.50, do_range=False)

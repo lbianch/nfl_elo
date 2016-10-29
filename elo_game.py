@@ -1,13 +1,16 @@
 import logging
 import math
 
-from elo import ELO
+import elo
 import inv_erf
+ELO = elo.ELO
+
+logging.basicConfig(level=logging.DEBUG)
 
 class ELOGameSimulator:
     K = 20.0  # Controls scaling for ELO point transfer from game result
 
-    def __init__(self, home: ELO, away: ELO):
+    def __init__(self, home: ELO, away: ELO, **kwargs):
         self.home = home
         self.away = away
         self.winner = None
@@ -26,9 +29,7 @@ class ELOGameSimulator:
         return margin
 
     def HomeWinProbability(self) -> float:
-        exponent = -self.ELOMargin() / 400.0
-        den = 1.0 + 10.0**exponent
-        prob = 1.0 / den
+        prob = elo.probability(self.ELOMargin())
         logging.debug("Home probability = %f", prob)
         return prob
 
@@ -64,6 +65,7 @@ class ELOGameSimulator:
         return {self.home.name: self.away, self.away.name: self.home}[self.winner.name]
 
     def UpdateTeams(self):
+        # TODO: Handle ties
         if self.winner is None:
             self.Simulate()
         if self.winner == self.home:
@@ -82,16 +84,37 @@ class ELOGameSimulator:
         self.loser.UpdateLoss(elo_points)
 
 
+class ELONeutralGameSimulator(ELOGameSimulator):
+    def __init__(self, home: ELO, away: ELO, **kwargs):
+        super().__init__(home, away, **kwargs)
+
+    def ELOMargin(self) -> int:
+        # Neutral game, no home field advantage
+        logging.debug("Game %s @ %s", self.away, self.home)
+        margin = self.home.elo - self.away.elo
+        logging.debug("ELO Margin = %d", margin)
+        return margin
+
+
 class ELOKnownGame(ELOGameSimulator):
     def __init__(self, home: ELO, away: ELO, home_score: int, away_score: int):
-        super().__init__(home, away)
+        super().__init__(home, away, home_score=home_score, away_score=away_score)
         self.winner = self.home if home_score > away_score else self.away
         self.spread = abs(home_score - away_score)
 
 
+class ELONeutralKnownGame(ELONeutralGameSimulator, ELOKnownGame):
+    def __init__(self, home: ELO, away: ELO, home_score: int, away_score: int):
+        super().__init__(home, away, home_score=home_score, away_score=away_score)
+
+
 def GetGame(*args):
     if len(args) == 2:
+        if args[0].neutral:
+            return ELONeutralGameSimulator(*args)
         return ELOGameSimulator(*args)
     if len(args) == 4:
+        if args[0].neutral:
+            return ELONeutralKnownGame(*args)
         return ELOKnownGame(*args)
     raise ValueError("Requires either two or four arguments")
