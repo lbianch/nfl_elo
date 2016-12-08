@@ -15,12 +15,6 @@ class TestELOKnownGame(unittest.TestCase):
         team_a = ELO("NE", 1744)
         team_b = ELO("DET", 1540)
 
-        logging.info("Assuming NE {1744} vs DET {1540} at a neutral site ending 34-26; delta = 204")
-        self.assertEqual(GetGame(ELO("*NE", team_a.elo), team_b, 34, 26).ELOMargin(), 204,
-                         "Expected ELO Margin 1744 - 1540 = 204")
-        self.assertEqual(GetGame(ELO("*DET", team_b.elo), team_a, 34, 26).ELOMargin(), -204,
-                         "Expected ELO Margin 1540 - 1744 = - 204")
-
         logging.info("Assuming NE {1744} vs DET {1540} at NE ending 34-26; delta = 269")
         self.assertEqual(GetGame(team_a, team_b, 34, 26).ELOMargin(), 269,
                          "Expected ELO Margin 65 + 1744 - 1540 = 269")
@@ -28,6 +22,12 @@ class TestELOKnownGame(unittest.TestCase):
         logging.info("Assuming NE {1744} vs DET {1540} at DET ending 34-26; delta = 139")
         self.assertEqual(GetGame(team_b, team_a, 26, 34).ELOMargin(), -139,
                          "Expected ELO Margin 65 + 1540 - 1744 = -139")
+
+        logging.info("Assuming NE {1744} vs DET {1540} at a neutral site ending 34-26; delta = 204")
+        self.assertEqual(GetGame(ELO("*NE", team_a.elo), team_b, 34, 26).ELOMargin(), 204,
+                         "Expected ELO Margin 1744 - 1540 = 204")
+        self.assertEqual(GetGame(ELO("*DET", team_b.elo), team_a, 34, 26).ELOMargin(), -204,
+                         "Expected ELO Margin 1540 - 1744 = - 204")
 
     def test_raises(self):
         game = ELOKnownGame(ELO('ATL', 1541, 6, 1), ELO('TB', 1351, 2, 4), 20, 23)

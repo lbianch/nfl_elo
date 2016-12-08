@@ -1,3 +1,9 @@
+import collections
+
+from season import Season
+from standings import Standings
+from simulator import Simulator
+
 
 class Multisimulator:
     def __init__(self, season, standings, simulations, experiments):
@@ -10,22 +16,6 @@ class Multisimulator:
     @classmethod
     def FromJSON(cls, season_file, standings_file, simulations, experiments):
         return cls(Season.FromJSON(season_file), Standings.FromJSON(standings_file), simulations, experiments)
-
-    # @classmethod
-    # def FromSeason(cls, season, simulations, experiments):
-    # 	return cls(season, simulations, experiments)
-
-    # @classmethod
-    # def FromFile(cls, f, simulations, experiments):
-    # 	return cls(Season.FromFile(f), simulations, experiments)
-
-    # @classmethod
-    # def FromList(cls, data, simulations, experiments):
-    # 	return cls(Season.FromList(data), simulations, experiments)
-
-    # @classmethod
-    # def FromString(cls, string, simulations, experiments):
-    # 	return cls(Season.FromString(string), simulations, experiments)
 
     def Simulate(self):
         undefeated = {'ANY': []}

@@ -21,6 +21,7 @@ class TestInvErf(unittest.TestCase):
             inv_erf.sign('test')
 
     def test_inv_erf(self):
+        from math import erf
         self.assertEqual(inv_erf.inv_erf(0.0), 0.0)
         with self.assertRaises(ValueError):
             inv_erf.inv_erf(1.5)
@@ -28,7 +29,6 @@ class TestInvErf(unittest.TestCase):
             inv_erf.inv_erf(-1.5)
         with self.assertRaises(TypeError):
             inv_erf.inv_erf('0.0')
-        from math import erf
         for x in [0.1, 0.25, 0.4, 0.6, 0.75, 0.9]:
             self.assertAlmostEqual(inv_erf.inv_erf(erf(x)), x, 3)
 
@@ -50,8 +50,9 @@ class TestInvErf(unittest.TestCase):
         # Now try to aggregate using known random values
         N = 10000
         pt = 14.0
-        random_data = [inv_erf.get_spread(pt, prob(pt)) for _ in range(N)]
-        self.assertEqual(sum(random_data), 143046)
+        random_data = [inv_erf.get_spread(pt, prob(pt), random_state=42) for _ in range(N)]
+        self.assertEqual(sum(random_data), 141110)
+        self.assertEqual(sum(x == 0 for x in random_data), 8)
         # Now try to aggregate using unknown random values
         inv_erf.random.seed()
         random_data = sum(inv_erf.get_spread(pt, prob(pt)) for _ in range(N))

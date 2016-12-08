@@ -14,18 +14,6 @@ class SeasonSimulator:
     def FromJSON(cls, season_file, standings_file):
         return cls(Season.FromJSON(season_file), Standings.FromJSON(standings_file))
 
-    @classmethod
-    def FromFile(cls, season_f, standings_f):
-        return cls(Season.FromFile(season_f), Standings.FromFile(standings_f))
-
-    @classmethod
-    def FromString(cls, season_str, standings_str):
-        return cls(Season.FromString(season_str), Standings.FromString(standings_str))
-
-    @classmethod
-    def FromList(cls, season_data, standings_data):
-        return cls(Season.FromList(season_data), Standings.FromDict(standings_data))
-
     def VerifySimulation(self):
         assert len(self.standings) == 32
         totalWins = sum(map(lambda t: t.wins, self.standings.values()))

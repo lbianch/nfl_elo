@@ -14,28 +14,12 @@ class Season(UserList):  # Use with `schedule.json`
         self.VerifyData(data['expected'])
 
     @classmethod
-    def FromJSON(cls, json_file):
+    def FromJSON(cls, json_file: str):
         if not json_file.endswith(".json"):
             json_file += '.json'
         with open(json_file) as f:
             data = json.load(f)
         return cls(data)
-
-    @classmethod
-    def FromFile(cls, f):
-        return cls(json.load(f))
-
-    @classmethod
-    def FromString(cls, string):
-        return cls(json.loads(string))
-
-    @classmethod
-    def FromDict(cls, data):
-        return cls(data)
-
-    @classmethod
-    def FromList(cls, data):
-        return cls({'schedule': data, 'expected': None})
 
     def VerifyData(self, expected=None):
         assert len(self) == 17

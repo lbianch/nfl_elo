@@ -125,7 +125,7 @@
  ["CLE", "NYJ"],
  ["TB", "OAK"],
  ["BUF", "NE"],
- ["*CIN", "WAS"],
+ ["*CIN", "WAS", 27, 27],
  ["TEN", "JAC", 36, 22]
 ],
  [["SEA", "BUF"],

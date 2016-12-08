@@ -20,22 +20,6 @@ class Simulator:
         standings = os.path.join(directory, 'elo_start.json')
         return cls(Season.FromJSON(season), Standings.FromJSON(standings), simulations)
 
-    @classmethod
-    def FromJSON(cls, season_file, elo_file, simulations):
-        return cls(Season.FromJSON(season_file), Standings.FromJSON(elo_file), simulations)
-
-    @classmethod
-    def FromString(cls, season_str, elo_str, simulations):
-        return cls(Season.FromString(season_str), Standings.FromString(elo_str), simulations)
-
-    @classmethod
-    def FromFile(cls, season_f, elo_f, simulations):
-        return cls(Season.FromFile(season_f), Standings.FromFile(elo_f), simulations)
-
-    @classmethod
-    def FromList(cls, season_data, standings_data, simulations):
-        return cls(Season.FromList(season_data), Standings.FromDict(standings_data), simulations)
-
     def Simulate(self, simulations=None):
         if simulations:
             self.simulations = simulations
