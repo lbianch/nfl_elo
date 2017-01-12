@@ -51,8 +51,8 @@ class TestInvErf(unittest.TestCase):
         N = 10000
         pt = 14.0
         random_data = [inv_erf.get_spread(pt, prob(pt), random_state=42) for _ in range(N)]
-        self.assertEqual(sum(random_data), 141110)
-        self.assertEqual(sum(x == 0 for x in random_data), 8)
+        self.assertEqual(sum(random_data), 140461)
+        self.assertEqual(sum(x == 0 for x in random_data), 6)
         # Now try to aggregate using unknown random values
         inv_erf.random.seed()
         random_data = sum(inv_erf.get_spread(pt, prob(pt)) for _ in range(N))

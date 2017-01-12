@@ -1,49 +1,57 @@
+import os
 import json
 from typing import Dict, List
+from collections import UserDict
 
 from elo import ELO
 
 
-class Standings(dict):  # Use with `elo_start.json`
-    def __init__(self, start_elo: Dict[str, List[int]]):
-        super().__init__()
-        for team in start_elo:
-            self[team] = ELO(team, *start_elo[team])
+class Standings(UserDict):
+    """
 
-    @staticmethod
-    def _FormatDict(data):
-        for team, val in data.items():
-            if not isinstance(val, list):
-                data[team] = [val]
-        return data
+
+    """
+    def __init__(self, start_elo: Dict[str, ELO]):
+        super().__init__(start_elo)
 
     @classmethod
     def FromJSON(cls, json_file):
+        """
+
+        :param json_file:
+        :return:
+        """
         if not json_file.endswith('.json'):
             json_file += '.json'
         with open(json_file) as f:
             data = json.load(f)
-        return cls(Standings._FormatDict(data))
+        for team, val in data.items():
+            if isinstance(val, ELO):
+                continue
+            if isinstance(val, int):
+                data[team] = ELO(team, val)
+            elif isinstance(val, List[int]):
+                data[team] = ELO(team, *val)
+        return cls(data)
 
     @classmethod
-    def FromFile(cls, f):
-        return cls(Standings._FormatDict(json.load(f)))
-
-    @classmethod
-    def FromDict(cls, d):
-        return cls(Standings._FormatDict(d))
-
-    @classmethod
-    def FromString(cls, string):
-        return cls(Standings._FormatDict(json.loads(string)))
+    def FromJSONDirectory(cls, directory):
+        return cls.FromJSON(os.path.join(directory, 'elo_start.json'))
 
     def __contains__(self, item: str) -> bool:
-        return dict.__contains__(self, item.strip("*"))
+        return item.strip("*") in self.data
 
     def __getitem__(self, item: str) -> ELO:
-        return dict.__getitem__(self, item.strip("*"))
+        return self.data[item.strip("*")]
+
+    def get(self, key, default=None):
+        return self.data.get(key.strip("*"), default)
 
     def PrintStandings(self):
+        """
+
+        :return:
+        """
         # Note this relies on ELO.__lt__
         for team in sorted(self.values(), reverse=True):
             print('{:3} {}'.format(team.name, team.record.Standings()))
@@ -58,7 +66,9 @@ class Standings(dict):  # Use with `elo_start.json`
         return self[team].ties
 
     def GetUndefeated(self) -> List[ELO]:
-        return filter(ELO.IsUndefeated, self.values())
+        result = filter(ELO.IsUndefeated, self.values())
+        return list(result)
 
     def GetNumberUndefeated(self) -> int:
         return len(self.GetUndefeated())
+

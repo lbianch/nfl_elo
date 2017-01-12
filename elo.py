@@ -36,9 +36,11 @@ class Record:
         return self.__dict__ == other.__dict__
 
     def __str__(self):
+        # return f'{self.wins}-{self.losses}-{self.ties}'
         return '{self.wins}-{self.losses}-{self.ties}'.format(self=self)
 
     def __repr__(self):
+        # return f'Record(wins={self.wins}, losses={self.losses}, ties={self.ties})'
         return 'Record(wins={self.wins}, losses={self.losses}, ties={self.ties})'.format(self=self)
 
     @property
@@ -58,6 +60,7 @@ class Record:
             09 06 01
 
         """
+        # return f'{self.wins:02d} {self.losses:02d} {self.ties:02d}'
         return '{self.wins:02d} {self.losses:02d} {self.ties:02d}'.format(self=self)
 
     def Verify(self):
@@ -68,13 +71,16 @@ class Record:
 
         """
         if self.wins not in range(17):
+            # raise ValueError(f"Wins is not between 0 and 16, found {self.wins}")
             raise ValueError("Wins is not between 0 and 16, found {self.wins}".format(self=self))
         if self.losses not in range(17):
+            # raise ValueError(f"Losses is not between 0 and 16, found {self.losses}")
             raise ValueError("Losses is not between 0 and 16, found {self.losses}".format(self=self))
         if self.ties not in range(17):
+            # raise ValueError(f"Ties is not between 0 and 16, found {self.ties}")
             raise ValueError("Ties is not between 0 and 16, found {self.ties}".format(self=self))
         if self.wins + self.losses + self.ties not in range(17):
-            #raise ValueError(f"Total games is not between 0 and 16, found {self.wins + self.losses + self.ties}")
+            # raise ValueError(f"Total games is not between 0 and 16, found {self.wins + self.losses + self.ties}")
             raise ValueError("Total games is not between 0 and 16, found {}".format(self.games))
 
     def WinPercent(self) -> float:
@@ -124,23 +130,20 @@ class ELO:
     def __init__(self, name: str, starting_elo: int,
                  wins: int=0, losses: int=0, ties: int=0,
                  record: Optional[Record]=None):
-        self.name = name
+        self.name = name.strip("*")
         self.elo = starting_elo
         self.record = record or Record(wins, losses, ties)
 
     @property
-    def wins(self):
-        """int: current team wins"""
+    def wins(self) -> int:
         return self.record.wins
 
     @property
-    def losses(self):
-        """int: current team losses"""
+    def losses(self) -> int:
         return self.record.losses
 
     @property
-    def ties(self):
-        """int: current team ties"""
+    def ties(self) -> int:
         return self.record.ties
 
     def __lt__(self, other: 'ELO') -> bool:
@@ -217,7 +220,7 @@ def probability(elo_margin: int) -> float:
 
     Examples:
         >>> p = probability(75)
-        >>> print({:0.3f}.format(p))
+        >>> print("{:0.3f}".format(p))
         0.606
 
     """
@@ -225,8 +228,9 @@ def probability(elo_margin: int) -> float:
     den = 1.0 + 10.0**exponent
     return 1.0 / den
 
+
 def probability_points(pt_margin: float) -> float:
-    """Calculates the probabily of a win given by an expected point differential.
+    """Calculates the probability of a win given by an expected point differential.
     The point differential and ELO difference are related by a factor of 25.
 
     Args:
@@ -236,8 +240,8 @@ def probability_points(pt_margin: float) -> float:
         Probability of winning
 
     Examples:
-        >>> p = probability_points(3)
-        >>> print('{:0.3f}'.format(p))
+        >>> p = probability_points(3.)
+        >>> print("{:0.3f}".format(p))
         0.606
 
     """

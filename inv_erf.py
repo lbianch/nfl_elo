@@ -91,6 +91,7 @@ def get_spread(mu: float,
         mu: Mean of the Gaussian distribution
         prob (optional): Probability of the outcome being positive, see `get_sigma`
         sigma (optional): Standard deviation of the Gaussian distribution
+        random_state (optional): Random state used by `scipy.stats.beta.rvs`
 
     Returns:
         Random integer corresponding to the described Gaussian distribution
@@ -108,6 +109,6 @@ def get_spread(mu: float,
         return result
     if random.random() < scipy.stats.beta(5, 74).rvs(random_state=random_state):
         return 0
-    # Overtime games have resulted in one 2 SAF win, 22 FG wins, and 52 TD wins
+    # Overtime games have resulted in 1 SAF win, 22 FG wins, and 52 TD wins
     # Choose a random representative outcome
-    return int(sign(random.random() - 0.5)) * random.choice([2] + 52*[3] + 22*[6])
+    return random.choice([1, -1]) * random.choice([2] + 52*[3] + 22*[6])

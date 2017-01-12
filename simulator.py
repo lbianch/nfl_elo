@@ -7,6 +7,9 @@ from standings import Standings
 from season_simulator import SeasonSimulator
 
 class Simulator:
+    """
+
+    """
     def __init__(self, season: Season, standings: Standings, simulations: int):
         self.undefeated = []
         self.nUndefeated = []
@@ -21,6 +24,11 @@ class Simulator:
         return cls(Season.FromJSON(season), Standings.FromJSON(standings), simulations)
 
     def Simulate(self, simulations=None):
+        """
+
+        :param simulations:
+        :return:
+        """
         if simulations:
             self.simulations = simulations
         for i in range(self.simulations):
@@ -31,11 +39,20 @@ class Simulator:
             self.nUndefeated += range(1, standings.GetNumberUndefeated() + 1)
 
     def GetPercent(self, value):
+        """
+
+        :param value:
+        :return:
+        """
         if 0.0 <= value <= self.simulations:
             return 100.0 * value / self.simulations
         raise ValueError("Expected value in [0,{}], received {}".format(self.simulations, value))
 
     def PrintUndefeated(self):
+        """
+
+        :return:
+        """
         undefeated = collections.Counter(self.undefeated)
         nUndefeated = collections.Counter(self.nUndefeated)
         for team in undefeated:

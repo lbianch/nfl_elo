@@ -1,57 +1,119 @@
+import os
 import json
-from typing import Dict
+from typing import List, Dict, Union
 from collections import UserList
 
+from elo import ELO
 
 class Week(UserList):
-    def __init__(self, data: list):
+    """
+
+    """
+    def __init__(self, data: List[Union[str, int]]):
         super().__init__(data)
 
+    def ToELO(self) -> ELO:
+        return ELO(*self.data)
 
-class Season(UserList):  # Use with `schedule.json`
-    def __init__(self, data: Dict[str, list]):
-        super().__init__([Week(d) for d in data['schedule']])
+
+class SeasonError(Exception):
+    pass
+
+
+class Season(UserList):
+    """
+
+    """
+    def __init__(self, data: Dict[str, List[Union[int, List[Union[str, int]]]]]):
+        super().__init__(Week(d) for d in data['schedule'])
         self.VerifyData(data['expected'])
 
     @classmethod
     def FromJSON(cls, json_file: str):
+        """
+
+        :param json_file:
+        :return:
+        """
         if not json_file.endswith(".json"):
             json_file += '.json'
         with open(json_file) as f:
-            data = json.load(f)
-        return cls(data)
+            return cls(json.load(f))
+
+    @classmethod
+    def FromJSONDirectory(cls, directory: str):
+        """
+
+        :param directory:
+        :return:
+        """
+        return cls.FromJSON(os.path.join(directory, 'schedule.json'))
 
     def VerifyData(self, expected=None):
-        assert len(self) == 17
+        """
+
+        :param expected:
+        :return:
+        """
+        if len(self) != 17:
+            #raise SeasonError(f"Season must have 17 weeks, found {len(self)}")
+            raise SeasonError("Season must have 17 weeks, found {}".format(len(self)))
         if expected is None:
             expected = [len(w) for w in self]
-        assert len(expected) == 17, expected
+        if len(expected) != 17:
+            #raise SeasonError(f"Expected season data must have 17 weeks, found {len(expected)}")
+            raise SeasonError("Expected season data must have 17 weeks, found {}".format(len(expected)))
         teams = set()
         for i, week in enumerate(self):
-            assert len(week) == expected[i], "Week {}".format(i + 1)
+            if len(week) != expected[i]:
+                #raise SeasonError(f"Week {i+1} expected {expected[i]} games but found {len(week)} games")
+                raise SeasonError("Week {} expected {} games but found {} games".format(i+1, expected[i], len(week)))
             week_teams = []
             for game in week:
-                assert len(game) == 2 or len(game) == 4, game
-                assert isinstance(game[0], str), game
-                assert isinstance(game[1], str), game
+                if len(game) not in [2, 4]:
+                    #raise SeasonError(f"Week {i+1} has game with incorrect arguments, need 2 or 4")
+                    raise SeasonError("Week {} has game with incorrect arguments, need 2 or 4".format(i+1))
+                if not isinstance(game[0], str):
+                    #raise SeasonError(f"Home team is not string, found {game[0]}")
+                    raise SeasonError("Home team is not string, found {}".format(game[0]))
+                if not isinstance(game[1], str):
+                    #raise SeasonError(f"Home team is not string, found {game[1]}")
+                    raise SeasonError("Home team is not string, found {}".format(game[1]))
                 home, away = map(lambda g: g.strip("*"), game[0:2])
                 teams.update([home, away])
                 week_teams.append(home)
                 week_teams.append(away)
                 if len(game) == 2:
                     continue
-                scores = game[2:4]
-                for score in scores:
-                    assert isinstance(score, int), game
-                    assert 0 <= score < 100, game
-            assert len(week_teams) == 2 * expected[i], \
-                "Week {} {} games {}".format(i + 1, expected[i], week_teams)
-            assert len(week_teams) == len(set(week_teams)), \
-                "Week {} Duplicate {}".format(i + 1, set([t for t in week_teams if week_teams.count(t) > 1]))
+                for score in game[2:4]:
+                    if not isinstance(score, int):
+                        #raise SeasonError(f"Score must be integer, found {score}")
+                        raise SeasonError("Score must be integer, found {}".format(score))
+                    if score not in range(100):
+                        #raise SeasonError(f"Score must be between 0 and 99, found {score}")
+                        raise SeasonError("Score must be between 0 and 99, found {}".format(score))
+            if len(week_teams) != 2 * expected[i]:
+                #raise SeasonError(f"Week {i+1} {expected[i]} games {week_teams}")
+                raise SeasonError("Week {} {} games {}".format(i+1, expected[i], week_teams))
+            if len(week_teams) != len(set(week_teams)):
+                duplicates = set(filter(lambda t: week_teams.count(t) > 1, week_teams))
+                #raise SeasonError(f"Week {i+1} Duplicate {duplicates}")
+                raise SeasonError("Week {} Duplicate {}".format(i+1, duplicates))
             week_teams = set(week_teams)
-            assert week_teams.issubset(teams)
-        assert len(teams) == 32, teams
+            if not week_teams.issubset(teams):
+                extra_teams = week_teams - teams
+                #raise SeasonError(f"Unexpected teams found: {extra_teams}")
+                raise SeasonError("Unexpected teams found: {}".format(extra_teams))
+        if len(teams) != 32:
+            #raise SeasonError(f"Must have 32 teams, found {len(teams)}")
+            raise SeasonError("Must have 32 teams, found {}".format(len(teams)))
         for team in teams:
-            assert len(team) in (2, 3), team
-            assert team.isupper(), team
-            assert team.isalpha(), team
+            if len(team) not in (2, 3):
+                #raise SeasonError(f"Team name must be 2 or 3 characters, found {team}")
+                raise SeasonError("Team name must be 2 or 3 characters, found {}".format(team))
+            if not team.isupper():
+                #raise SeasonError(f"Team name must be uppercase, found {team}")
+                raise SeasonError("Team name must be uppercase, found {}".format(team))
+            if not team.isalpha():
+                #raise SeasonError(f"Team name '{team}' not valid")
+                raise SeasonError("Team name '{}' not valid".format(team))
