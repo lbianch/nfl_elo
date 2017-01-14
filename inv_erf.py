@@ -36,7 +36,7 @@ def inv_erf(x: float) -> float:
 
     """
     if abs(x) > 1.0:
-        raise ValueError("Input argument must be between -1 and 1, found {}".format(x))
+        raise ValueError(f"Input argument must be between -1 and 1, found {x}")
     log = math.log(1.0 - x**2)
     a = 8.0 * (math.pi - 3.0) / (3.0 * math.pi * (4.0 - math.pi))
     common_term = 2.0 / (math.pi * a)

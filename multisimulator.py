@@ -71,11 +71,9 @@ class Multisimulator:
             if do_range:
                 p_min = Percentile((1.0 - percentile) / 2.0)
                 p_max = Percentile((1.0 + percentile) / 2.0)
-                print('{:<3} [{}%]: {}% - {}%'.format(team, int(100 * percentile), p_min, p_max))
-                #print(f'{team:<3} [{int(100 * percentile)}%]: {p_min}% - {p_max}%')
+                print(f'{team:<3} [{int(100 * percentile)}%]: {p_min}% - {p_max}%')
             else:
-                print('{:<3} [{}%]: {}%'.format(team, int(100 * percentile), Percentile(percentile)))
-                #print(f'{team:<3} [{int(100 * percentile)}%]: {GetPercentile(percentile)}%')
+                print(f'{team:<3} [{int(100 * percentile)}%]: {GetPercentile(percentile)}%')
 
     def PrintUndefeated(self):
         """

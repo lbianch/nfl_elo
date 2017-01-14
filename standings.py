@@ -54,7 +54,7 @@ class Standings(UserDict):
         """
         # Note this relies on ELO.__lt__
         for team in sorted(self.values(), reverse=True):
-            print('{:3} {}'.format(team.name, team.record.Standings()))
+            print(f'{team.name:3} {team.record.Standings()}')
 
     def Wins(self, team: str) -> int:
         return self[team].wins

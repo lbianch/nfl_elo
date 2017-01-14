@@ -36,12 +36,10 @@ class Record:
         return self.__dict__ == other.__dict__
 
     def __str__(self):
-        # return f'{self.wins}-{self.losses}-{self.ties}'
-        return '{self.wins}-{self.losses}-{self.ties}'.format(self=self)
+        return f'{self.wins}-{self.losses}-{self.ties}'
 
     def __repr__(self):
-        # return f'Record(wins={self.wins}, losses={self.losses}, ties={self.ties})'
-        return 'Record(wins={self.wins}, losses={self.losses}, ties={self.ties})'.format(self=self)
+        return f'Record(wins={self.wins}, losses={self.losses}, ties={self.ties})'
 
     @property
     def games(self) -> int:
@@ -60,8 +58,7 @@ class Record:
             09 06 01
 
         """
-        # return f'{self.wins:02d} {self.losses:02d} {self.ties:02d}'
-        return '{self.wins:02d} {self.losses:02d} {self.ties:02d}'.format(self=self)
+        return f'{self.wins:02d} {self.losses:02d} {self.ties:02d}'
 
     def Verify(self):
         """Checks if the current record is valid.
@@ -71,17 +68,13 @@ class Record:
 
         """
         if self.wins not in range(17):
-            # raise ValueError(f"Wins is not between 0 and 16, found {self.wins}")
-            raise ValueError("Wins is not between 0 and 16, found {self.wins}".format(self=self))
+            raise ValueError(f"Wins is not between 0 and 16, found {self.wins}")
         if self.losses not in range(17):
-            # raise ValueError(f"Losses is not between 0 and 16, found {self.losses}")
-            raise ValueError("Losses is not between 0 and 16, found {self.losses}".format(self=self))
+            raise ValueError(f"Losses is not between 0 and 16, found {self.losses}")
         if self.ties not in range(17):
-            # raise ValueError(f"Ties is not between 0 and 16, found {self.ties}")
-            raise ValueError("Ties is not between 0 and 16, found {self.ties}".format(self=self))
+            raise ValueError(f"Ties is not between 0 and 16, found {self.ties}")
         if self.wins + self.losses + self.ties not in range(17):
-            # raise ValueError(f"Total games is not between 0 and 16, found {self.wins + self.losses + self.ties}")
-            raise ValueError("Total games is not between 0 and 16, found {}".format(self.games))
+            raise ValueError(f"Total games is not between 0 and 16, found {self.wins + self.losses + self.ties}")
 
     def WinPercent(self) -> float:
         """Determines the win percentage for the current standings"""
@@ -161,10 +154,10 @@ class ELO:
         return self.__dict__ == other.__dict__
 
     def __repr__(self):
-        return "ELO(name='{self.name}', starting_elo={self.elo}, record={self.record!r})".format(self=self)
+        return f"ELO(name='{self.name}', starting_elo={self.elo}, record={self.record!r})"
 
     def __str__(self):
-        return "{self.name} ({self.record}) ELO: {self.elo}".format(self=self)
+        return f"{self.name} ({self.record}) ELO: {self.elo}"
 
     def UpdateWin(self, points: float):
         """Updates the ELO and record for the current team assuming a win.

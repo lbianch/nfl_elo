@@ -124,7 +124,7 @@ class ELOGameSimulator:
         elif self.winner is self.away:
             prob = self.AwayWinProbability()
         else:
-            raise ValueError("Winner is {self.winner} but must be one of {self.home} or {self.away}".format(self=self))
+            raise ValueError(f"Winner is {self.winner} but must be one of {self.home} or {self.away}")
         elo_points = ELOGameSimulator.K * (1.0 - prob)
         elo_points *= math.log(abs(self.spread) + 1.0)
         elo_points /= 1.0 + (self.winner.elo - self.loser.elo) / 2200.0

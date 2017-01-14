@@ -59,8 +59,7 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_max': 0.188,
                 'elo_points': 25}
         game = self.run_game(data)
-        self.assertLess(game.winner, game.loser,
-                        "Expected {g.winner} to be less than {g.loser}".format(g=game))
+        self.assertLess(game.winner, game.loser, f"Expected {game.winner} to be less than {game.loser}")
         logging.info("Test Passed")
 
     def test_Week11_GBatMIN(self):
@@ -80,8 +79,7 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_max': 0.46,
                 'elo_points': 31}
         game = self.run_game(data)
-        self.assertLess(game.loser, game.winner,
-                        "Expected {g.loser} to be less than {g.winner}".format(g=game))
+        self.assertLess(game.loser, game.winner, f"Expected {game.loser} to be less than {game.winner}")
         logging.info("Test Passed")
 
     def test_Week14_SEAatBAL(self):
@@ -101,8 +99,7 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_max': 0.667,
                 'elo_points': 21}
         game = self.run_game(data)
-        self.assertLess(game.loser, game.winner,
-                        "Expected {g.loser} to be less than {g.winner}".format(g=game))
+        self.assertLess(game.loser, game.winner, f"Expected {game.loser} to be less than {game.winner}")
         logging.info("Test Passed")
 
     def test_Week17_NEatMIA(self):
@@ -122,51 +119,47 @@ class TestELOKnownGame(unittest.TestCase):
                 'away_win_max': 0.820,
                 'elo_points': 46}
         game = self.run_game(data)
-        self.assertLess(game.winner, game.loser,
-                        "Expected {g.winner} to be less than {g.loser}".format(g=game))
+        self.assertLess(game.winner, game.loser, f"Expected {game.winner} to be less than {game.loser}")
         logging.info("Test Passed")
 
     def run_game(self, data):
         g = ELOKnownGame(data['home'], data['away'], data['home_points'], data['away_points'])
         self.assertEqual(g.winner.name, data['winner'].name,
-                         "Expected winner to be {} but found {}".format(data['winner'].name, g.winner.name))
+                         f"Expected winner to be {data['winner'].name} but found {g.winner.name}")
         self.assertEqual(g.loser.name, data['loser'].name,
-                         "Expected loser to be {} but fond {}".format(data['loser'].name, g.loser.name))
+                         f"Expected loser to be {data['loser'].name} but found {g.loser.name}")
         self.assertEqual(g.spread, data['spread'],
-                         "Expected spread of {}, found {}".format(data['spread'], g.spread))
+                         f"Expected spread of {data['spread']}, found {g.spread}")
         self.assertEqual(g.HomeWinProbability() + g.AwayWinProbability(), 1.0,
-                         "Expected probabilities sum to 1.0, found {} and {}".format(g.HomeWinProbability(),
-                                                                                     g.AwayWinProbability()))
+                         f"Expected probabilities sum to 1.0, found {g.HomeWinProbability()} "
+                         f"and {g.AwayWinProbability()}")
         self.assertLess(data['home_win_min'], g.HomeWinProbability(),
-                        "Expected p >= {}, found {}".format(data['home_win_min'], g.HomeWinProbability()))
+                        f"Expected p >= {data['home_win_min']}, found {g.HomeWinProbability()}")
         self.assertLess(g.HomeWinProbability(), data['home_win_max'],
-                        "Expected p < {}, found {}".format(data['home_win_max'], g.HomeWinProbability()))
+                        f"Expected p < {data['home_win_max']}, found {g.HomeWinProbability()}")
         self.assertLess(data['away_win_min'], g.AwayWinProbability(),
-                        "Expected p >= {}, found {}".format(data['away_win_min'], g.AwayWinProbability()))
+                        f"Expected p >= {data['away_win_min']}, found {g.AwayWinProbability()}")
         self.assertLess(g.AwayWinProbability(), data['away_win_max'],
-                        "Expected p < {}, found {}".format(data['away_win_max'], g.AwayWinProbability()))
+                        f"Expected p < {data['away_win_max']}, found {g.AwayWinProbability()}")
         start_elo = g.home.elo
         g.UpdateTeams()
         elo_points = abs(g.home.elo - start_elo)
-        self.assertEqual(elo_points, data['elo_points'],
-                         "Expected {} found {}".format(data['elo_points'], elo_points))
+        self.assertEqual(elo_points, data['elo_points'], f"Expected {data['elo_points']} found {elo_points}")
         self.assertEqual(g.winner.elo + g.loser.elo, data['home'].elo + data['away'].elo,
-                         "Expected points to sum to {} but found {} + {} = {}".format(
-                             data['home'].elo + data['away'].elo,
-                             g.winner.elo, g.loser.elo,
-                             g.winner.elo + g.loser.elo))
+                         f"Expected points to sum to {data['home'].elo + data['away'].elo} but found "
+                         f"{g.winner.elo} + {g.loser.elo} = {g.winner.elo + g.loser.elo}")
         self.assertEqual(g.winner.elo, data['winner'].elo,
-                         "Expected winner to have ELO {} but found {}".format(data['winner'].elo, g.winner.elo))
+                         f"Expected winner to have ELO {data['winner'].elo} but found {g.winner.elo}")
         self.assertEqual(g.loser.elo, data['loser'].elo,
-                         "Expected loser to have ELO {} but found {}".format(data['loser'].elo, g.loser.elo))
+                         f"Expected loser to have ELO {data['loser'].elo} but found {g.loser.elo}")
         self.assertEqual(g.winner.wins, data['winner'].wins,
-                         "Expected winner to have {} wins but found {}".format(data['winner'].wins, g.winner.wins))
+                         f"Expected winner to have {data['winner'].wins} wins but found {g.winner.wins}")
         self.assertEqual(g.winner.losses, data['winner'].losses,
-                         "Expected winner to have {} losses but found {}".format(data['winner'].losses, g.winner.losses))
+                         f"Expected winner to have {data['winner'].losses} losses but found {g.winner.losses}")
         self.assertEqual(g.loser.wins, data['loser'].wins,
-                         "Expected loser to have {} wins but found {}".format(data['loser'].wins, g.loser.wins))
+                         f"Expected loser to have {data['loser'].wins} wins but found {g.loser.wins}")
         self.assertEqual(g.loser.losses, data['loser'].losses,
-                         "Expected loser to have {} losses but found {}".format(data['loser'].losses, g.loser.losses))
+                         f"Expected loser to have {data['loser'].losses} losses but found {g.loser.losses}")
         return g
 
 
